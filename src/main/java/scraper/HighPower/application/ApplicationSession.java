@@ -1,6 +1,4 @@
-package scraper.HighPower.scraper;
-
-import scraper.HighPower.domain.Rental;
+package scraper.HighPower.application;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,21 +6,19 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.List;
 import java.util.Properties;
 
 /**
- * Abstract class representing a generic scraper for rental properties.
- * This class provides methods to retrieve configuration properties
- * such as coordinates, price, dates, and other search parameters from a properties file.
+ * The ApplicationSession class provides methods to retrieve various configuration settings
+ * from a properties file. These settings include coordinates, distance, price, quantity, dates, and amenities.
  */
-abstract public class Scraper {
+public class ApplicationSession {
     private static final String CONFIGURATION_FILENAME = "src/main/resources/config.properties";
     private static final String LATITUDE_COORDINATES = "Coordinates.Latitude";
     private static final String LONGITUDE_COORDINATES = "Coordinates.Longitude";
     private static final String MAXIMUM_DISTANCE = "Maximum.Distance";
     private static final String MAXIMUM_PRICE = "Maximum.Price";
-    private static final String NIGHT_QUANTITY  = "Quantity.Night";
+    private static final String NIGHT_QUANTITY = "Quantity.Night";
     private static final String PEOPLE_QUANTITY = "Quantity.People";
     private static final String START_DATE = "Date.Start";
     private static final String END_DATE = "Date.End";
@@ -33,7 +29,7 @@ abstract public class Scraper {
      *
      * @return The properties loaded from the configuration file.
      */
-    private Properties getProperties() {
+    private static Properties getProperties() {
         Properties props = new Properties();
 
         // Read configured values
@@ -50,17 +46,17 @@ abstract public class Scraper {
     /**
      * Parses a double value from a string.
      *
-     * @param str The string to parse.
+     * @param str       The string to parse.
      * @param fieldName The name of the field for error messages.
      * @return The parsed double value.
      * @throws IllegalArgumentException If the string cannot be parsed into a double.
      */
-    private double getDoubleFromString(String str, String fieldName){
+    private static double getDoubleFromString(String str, String fieldName) {
         double value;
 
         try {
             value = Double.parseDouble(str);
-        }catch (NullPointerException | NumberFormatException e){
+        } catch (NullPointerException | NumberFormatException e) {
             throw new IllegalArgumentException(fieldName + " in the configuration file must be a number!");
         }
 
@@ -70,17 +66,17 @@ abstract public class Scraper {
     /**
      * Parses an integer value from a string.
      *
-     * @param str The string to parse.
+     * @param str       The string to parse.
      * @param fieldName The name of the field for error messages.
      * @return The parsed integer value.
      * @throws IllegalArgumentException If the string cannot be parsed into an integer.
      */
-    private int getIntegerFromString(String str, String fieldName){
+    private static int getIntegerFromString(String str, String fieldName) {
         int value;
 
         try {
             value = Integer.parseInt(str);
-        }catch (NullPointerException | NumberFormatException e){
+        } catch (NullPointerException | NumberFormatException e) {
             throw new IllegalArgumentException(fieldName + " in the configuration file must be an integer!");
         }
 
@@ -90,17 +86,17 @@ abstract public class Scraper {
     /**
      * Parses a LocalDate value from a string.
      *
-     * @param str The string to parse.
+     * @param str       The string to parse.
      * @param fieldName The name of the field for error messages.
      * @return The parsed LocalDate value.
      * @throws IllegalArgumentException If the string cannot be parsed into a date.
      */
-    private LocalDate getDateFromString(String str, String fieldName){
+    private static LocalDate getDateFromString(String str, String fieldName) {
         LocalDate date;
 
         try {
             date = LocalDate.parse(str, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        }catch (DateTimeParseException e){
+        } catch (DateTimeParseException e) {
             throw new IllegalArgumentException(fieldName + " in the configuration file must be in the \"DD/MM/YYYY\" format!");
         }
 
@@ -108,11 +104,21 @@ abstract public class Scraper {
     }
 
     /**
+     * Parses a boolean value from a string.
+     *
+     * @param str The string to parse.
+     * @return The parsed boolean value.
+     */
+    private static boolean getBoolFromString(String str) {
+        return str.toLowerCase().matches("true");
+    }
+
+    /**
      * Gets the latitude from the configuration file.
      *
      * @return The latitude.
      */
-    protected double getLatitude() {
+    public static double getLatitude() {
         String strLatitude = getProperties().getProperty(LATITUDE_COORDINATES);
         return getDoubleFromString(strLatitude, "The latitude");
     }
@@ -122,7 +128,7 @@ abstract public class Scraper {
      *
      * @return The longitude.
      */
-    protected double getLongitude() {
+    public static double getLongitude() {
         String strLongitude = getProperties().getProperty(LONGITUDE_COORDINATES);
         return getDoubleFromString(strLongitude, "The longitude");
     }
@@ -132,7 +138,7 @@ abstract public class Scraper {
      *
      * @return The maximum distance.
      */
-    protected double getMaximumDistance() {
+    public static double getMaximumDistance() {
         String strDistance = getProperties().getProperty(MAXIMUM_DISTANCE);
         return getDoubleFromString(strDistance, "The maximum distance");
     }
@@ -142,7 +148,7 @@ abstract public class Scraper {
      *
      * @return The maximum price.
      */
-    protected double getMaximumPrice() {
+    public static double getMaximumPrice() {
         String strPrice = getProperties().getProperty(MAXIMUM_PRICE);
         return getDoubleFromString(strPrice, "The maximum price");
     }
@@ -152,7 +158,7 @@ abstract public class Scraper {
      *
      * @return The night quantity.
      */
-    protected int getNightQuantity() {
+    public static int getNightQuantity() {
         String strNight = getProperties().getProperty(NIGHT_QUANTITY);
         return getIntegerFromString(strNight, "The night quantity");
     }
@@ -162,7 +168,7 @@ abstract public class Scraper {
      *
      * @return The people quantity.
      */
-    protected int getPeopleQuantity() {
+    public static int getPeopleQuantity() {
         String strPeople = getProperties().getProperty(PEOPLE_QUANTITY);
         return getIntegerFromString(strPeople, "The people quantity");
     }
@@ -172,7 +178,7 @@ abstract public class Scraper {
      *
      * @return The start date.
      */
-    protected LocalDate getStartDate() {
+    public static LocalDate getStartDate() {
         String strDate = getProperties().getProperty(START_DATE);
         return getDateFromString(strDate, "The start date");
     }
@@ -182,44 +188,18 @@ abstract public class Scraper {
      *
      * @return The end date.
      */
-    protected LocalDate getEndDate() {
+    public static LocalDate getEndDate() {
         String strDate = getProperties().getProperty(END_DATE);
         return getDateFromString(strDate, "The end date");
     }
 
     /**
-     * Calculates the Haversine distance between two points on the Earth specified by latitude and longitude.
+     * Gets the pool availability from the configuration file.
      *
-     * @param lat1 Latitude of the first point.
-     * @param lon1 Longitude of the first point.
-     * @param lat2 Latitude of the second point.
-     * @param lon2 Longitude of the second point.
-     * @return The Haversine distance between the two points in kilometers.
+     * @return The pool availability.
      */
-    private static double haversine(double lat1, double lon1,
-                                    double lat2, double lon2){
-        // Distance between latitudes and longitudes
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
-
-        // Convert to radians
-        lat1 = Math.toRadians(lat1);
-        lat2 = Math.toRadians(lat2);
-
-        // Apply formulae
-        double a = Math.pow(Math.sin(dLat / 2), 2) +
-                Math.pow(Math.sin(dLon / 2), 2) *
-                        Math.cos(lat1) *
-                        Math.cos(lat2);
-        double rad = 6371;
-        double c = 2 * Math.asin(Math.sqrt(a));
-        return rad * c;
+    public static boolean getPool() {
+        String strPool = getProperties().getProperty(AMENITIES_POOL);
+        return getBoolFromString(strPool);
     }
-
-    /**
-     * Abstract method to be implemented by subclasses for scraping rental properties.
-     *
-     * @return A list of rental properties.
-     */
-    public abstract List<Rental> scrape();
 }
