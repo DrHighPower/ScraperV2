@@ -20,6 +20,7 @@ public class ApplicationSession {
     private static final String MAXIMUM_DISTANCE = "Maximum.Distance";
     private static final String MAXIMUM_PRICE = "Maximum.Price";
     private static final String PEOPLE_QUANTITY = "Quantity.People";
+    private static final String NIGHT_QUANTITY = "Quantity.Night";
     private static final String START_DATE = "Date.Start";
     private static final String END_DATE = "Date.End";
     private static final String FLEXIBLE_DATE = "Date.Flexible";
@@ -172,6 +173,16 @@ public class ApplicationSession {
     public static int getPeopleQuantity() {
         String strPeople = getProperties().getProperty(PEOPLE_QUANTITY);
         return getIntegerFromString(strPeople, "The people quantity");
+    }
+
+    /**
+     * Gets the night quantity from the configuration file.
+     *
+     * @return The night quantity.
+     */
+    public static int getNightQuantity() {
+        String strNight = getProperties().getProperty(NIGHT_QUANTITY);
+        return getIntegerFromString(strNight, "The night quantity");
     }
 
     /**

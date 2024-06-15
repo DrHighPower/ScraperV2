@@ -100,7 +100,7 @@ public class Airbnb implements Scrapable {
         // Get the type of search
         if (ApplicationSession.getFlexibility()) {
             this.pickerType = "flexible_dates";
-            this.nightQuantity = 5;
+            this.nightQuantity = ApplicationSession.getNightQuantity();
 
             LocalDate currentDate = startDate.withDayOfMonth(1);
             LocalDate end = endDate.withDayOfMonth(1);
@@ -164,7 +164,7 @@ public class Airbnb implements Scrapable {
                 .append("&query=").append(country)
                 .append("&date_picker_type=").append(pickerType)
                 .append("&adults=").append(maxPeople)
-                .append("&price_max=").append(maxPrice); // Max price per night
+                .append("&price_max=").append((maxPrice * maxPeople)/ nightQuantity); // Max price per night
 
         // Check the type of search
         if (pickerType.matches("flexible_dates")) {
