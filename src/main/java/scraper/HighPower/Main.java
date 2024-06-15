@@ -4,7 +4,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import scraper.HighPower.domain.Rental;
-import scraper.HighPower.scraper.Airbnb;
+import scraper.HighPower.scraper.MediaFerias;
 
 import java.util.List;
 
@@ -14,8 +14,8 @@ public class Main {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless");
 
-        WebDriver driver = new ChromeDriver(options);
-        List<Rental> test = new Airbnb().scrape(driver);
+        WebDriver driver = new ChromeDriver();
+        List<Rental> test = new MediaFerias().scrape(driver);
         driver.quit();
 
         System.out.println("Hello world!");

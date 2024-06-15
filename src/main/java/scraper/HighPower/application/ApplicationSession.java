@@ -17,6 +17,7 @@ public class ApplicationSession {
     private static final String LATITUDE_COORDINATES = "Coordinates.Latitude";
     private static final String LONGITUDE_COORDINATES = "Coordinates.Longitude";
     private static final String COUNTRY = "Coordinates.Country";
+    private static final String COUNTRY_CODE = "Coordinates.Country.Code";
     private static final String MAXIMUM_DISTANCE = "Maximum.Distance";
     private static final String MAXIMUM_PRICE = "Maximum.Price";
     private static final String PEOPLE_QUANTITY = "Quantity.People";
@@ -143,6 +144,16 @@ public class ApplicationSession {
      */
     public static String getCountry() {
         return getProperties().getProperty(COUNTRY);
+    }
+
+    /**
+     * Gets the country code from the configuration file.
+     *
+     * @return The country code.
+     */
+    public static int getCountryCode() {
+        String strCode = getProperties().getProperty(COUNTRY_CODE);
+        return getIntegerFromString(strCode, "The country code");
     }
 
     /**

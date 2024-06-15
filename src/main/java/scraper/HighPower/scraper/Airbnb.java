@@ -76,22 +76,19 @@ public class Airbnb implements Scrapable {
     private final String tripLength = "one_week";
     private final String pickerType;
     private final List<Integer> amenities = new ArrayList<>();
-    private final String country;
-    private final int maxPeople;
-    private final int maxPrice;
+    private final String country = ApplicationSession.getCountry();
+    private final int maxPeople = ApplicationSession.getPeopleQuantity();
+    private final int maxPrice = ApplicationSession.getMaximumPrice();
     private final List<String> flexibleTripDates = new ArrayList<>();
     private final int nightQuantity;
     private String searchQuery;
-    private List<LocalDate> tripDates;
+    private LocalDate[] tripDates;
 
 
     /**
      * Constructs an Airbnb object, initializing the search parameters from the ApplicationSession.
      */
     public Airbnb() {
-        this.country = ApplicationSession.getCountry();
-        this.maxPeople = ApplicationSession.getPeopleQuantity();
-        this.maxPrice = ApplicationSession.getMaximumPrice();
 
         // Get the dates for the search
         LocalDate startDate = ApplicationSession.getStartDate();
@@ -113,7 +110,7 @@ public class Airbnb implements Scrapable {
         } else {
             this.nightQuantity = (int) DAYS.between(startDate, endDate) - 1;
             this.pickerType = "calendar";
-            tripDates = new ArrayList<>(List.of(startDate, endDate));
+            tripDates = new LocalDate[]{startDate, endDate};
         }
 
         // Add amenities
@@ -164,7 +161,7 @@ public class Airbnb implements Scrapable {
                 .append("&query=").append(country)
                 .append("&date_picker_type=").append(pickerType)
                 .append("&adults=").append(maxPeople)
-                .append("&price_max=").append((maxPrice * maxPeople)/ nightQuantity); // Max price per night
+                .append("&price_max=").append((maxPrice * maxPeople) / nightQuantity); // Max price per night
 
         // Check the type of search
         if (pickerType.matches("flexible_dates")) {
@@ -177,8 +174,8 @@ public class Airbnb implements Scrapable {
         } else {
 
             // Get the night quantity to filter the rentals
-            LocalDate startDate = tripDates.get(0);
-            LocalDate endDate = tripDates.get(1);
+            LocalDate startDate = tripDates[0];
+            LocalDate endDate = tripDates[1];
             builder.append("&price_filter_num_nights=").append(DAYS.between(startDate, endDate) - 1)
                     .append("&checkin=").append(startDate)
                     .append("&checkout=").append(endDate);
@@ -228,15 +225,12 @@ public class Airbnb implements Scrapable {
         double zoom = 0;
 
         try {
-            // Get the coordinates
-            if (matcherCoords.find()) {
+            // Get the coordinates and zoom
+            if (matcherCoords.find() && matcherZoom.find()) {
                 String[] linkCoords = matcherCoords.group(0).split(",", 0);
                 latitude = Double.parseDouble(linkCoords[0]);
                 longitude = Double.parseDouble(linkCoords[1]);
-            }
 
-            // Get the zoom
-            if (matcherZoom.find()) {
                 zoom = Double.parseDouble(matcherZoom.group(1));
             }
         } catch (NullPointerException | NumberFormatException e) {
@@ -276,7 +270,7 @@ public class Airbnb implements Scrapable {
             // Check if it's a viable distance
             if (distance > MAX_DISTANCE) continue;
 
-            // Get rental data
+            // Get rental's data
             String rentalUrl = URL + rental.select("a").attr("href");
             double rentalNightPrice = Double.parseDouble(rental.select("div[aria-hidden='true'] > span[class]").text().replaceAll("[^\\d.]", ""));
             double rentalTotalPrice = rentalNightPrice * nightQuantity;
