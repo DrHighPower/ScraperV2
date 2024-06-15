@@ -16,13 +16,15 @@ public class ApplicationSession {
     private static final String CONFIGURATION_FILENAME = "src/main/resources/config.properties";
     private static final String LATITUDE_COORDINATES = "Coordinates.Latitude";
     private static final String LONGITUDE_COORDINATES = "Coordinates.Longitude";
+    private static final String COUNTRY = "Coordinates.Country";
     private static final String MAXIMUM_DISTANCE = "Maximum.Distance";
     private static final String MAXIMUM_PRICE = "Maximum.Price";
-    private static final String NIGHT_QUANTITY = "Quantity.Night";
     private static final String PEOPLE_QUANTITY = "Quantity.People";
     private static final String START_DATE = "Date.Start";
     private static final String END_DATE = "Date.End";
+    private static final String FLEXIBLE_DATE = "Date.Flexible";
     private static final String AMENITIES_POOL = "Amenities.Pool";
+    private static final String PAGE_WAIT = "Element.Wait";
 
     /**
      * Retrieves properties from the configuration file.
@@ -134,6 +136,15 @@ public class ApplicationSession {
     }
 
     /**
+     * Gets the country from the configuration file.
+     *
+     * @return The country.
+     */
+    public static String getCountry() {
+        return getProperties().getProperty(COUNTRY);
+    }
+
+    /**
      * Gets the maximum distance from the configuration file.
      *
      * @return The maximum distance.
@@ -148,19 +159,9 @@ public class ApplicationSession {
      *
      * @return The maximum price.
      */
-    public static double getMaximumPrice() {
+    public static int getMaximumPrice() {
         String strPrice = getProperties().getProperty(MAXIMUM_PRICE);
-        return getDoubleFromString(strPrice, "The maximum price");
-    }
-
-    /**
-     * Gets the night quantity from the configuration file.
-     *
-     * @return The night quantity.
-     */
-    public static int getNightQuantity() {
-        String strNight = getProperties().getProperty(NIGHT_QUANTITY);
-        return getIntegerFromString(strNight, "The night quantity");
+        return getIntegerFromString(strPrice, "The maximum price");
     }
 
     /**
@@ -194,6 +195,16 @@ public class ApplicationSession {
     }
 
     /**
+     * Gets the flexibility of dates from the configuration file.
+     *
+     * @return The date flexibility.
+     */
+    public static boolean getFlexibility() {
+        String strFlexible = getProperties().getProperty(FLEXIBLE_DATE);
+        return getBoolFromString(strFlexible);
+    }
+
+    /**
      * Gets the pool availability from the configuration file.
      *
      * @return The pool availability.
@@ -201,5 +212,15 @@ public class ApplicationSession {
     public static boolean getPool() {
         String strPool = getProperties().getProperty(AMENITIES_POOL);
         return getBoolFromString(strPool);
+    }
+
+    /**
+     * Gets the wait time from the configuration file.
+     *
+     * @return The wait time.
+     */
+    public static int getWait() {
+        String strWait = getProperties().getProperty(PAGE_WAIT);
+        return getIntegerFromString(strWait, "The wait time");
     }
 }

@@ -1,5 +1,6 @@
 package scraper.HighPower.scraper;
 
+import org.openqa.selenium.WebDriver;
 import scraper.HighPower.domain.Rental;
 
 import java.util.List;
@@ -14,5 +15,5 @@ public interface Scrapable {
      *
      * @return A list of Rental objects containing the scraped rental data.
      */
-    List<Rental> scrape();
+    List<Rental> scrape(WebDriver driver);
 }
