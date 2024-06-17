@@ -6,7 +6,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import scraper.HighPower.domain.Rental;
 import scraper.HighPower.scraper.Airbnb;
 import scraper.HighPower.scraper.MediaFerias;
-import scraper.HighPower.scraper.Scrapable;
+import scraper.HighPower.scraper.Scraper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 /**
- * The ScraperHandler class manages asynchronous scraping tasks for multiple Scrapable objects.
+ * The ScraperHandler class manages asynchronous scraping tasks for multiple Scraper objects.
  * It initializes WebDriver instances, performs scraping operations, and combines results
  * from different scrapers asynchronously using CompletableFuture.
  * <p>
@@ -31,26 +31,26 @@ import java.util.concurrent.ExecutionException;
  * </pre>
  * </p>
  *
- * @see Scrapable
+ * @see Scraper
  * @see Airbnb
  * @see MediaFerias
  */
 public class ScraperHandler {
 
     /**
-     * Asynchronously scrapes rental information from a Scrapable object.
+     * Asynchronously scrapes rental information from a Scraper object.
      *
-     * @param scraper The Scrapable object to scrape from.
+     * @param scraper The Scraper object to scrape from.
      * @return A CompletableFuture holding a list of Rental objects scraped asynchronously.
      */
-    private static CompletableFuture<List<Rental>> getRentalsAsync(Scrapable scraper) {
+    private static CompletableFuture<List<Rental>> getRentalsAsync(Scraper scraper) {
         return CompletableFuture.supplyAsync(() -> {
             // Add settings to the driver
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--headless");
 
             // Initiate the driver
-            WebDriver driver = new ChromeDriver(options);
+            WebDriver driver = new ChromeDriver();
 
             // Perform the scraping task
             List<Rental> rentals = scraper.scrape(driver);
@@ -69,13 +69,13 @@ public class ScraperHandler {
     public static void run() {
 
         // The list of scrapers. ToDo: Add a way to select which scrappers to use in the config file
-        List<Scrapable> scrapers = new ArrayList<>(List.of(new Airbnb(), new MediaFerias()));
+        List<Scraper> scrapers = new ArrayList<>(List.of(new Airbnb(), new MediaFerias()));
 
         // Create a list of CompletableFuture for each scraper
         List<CompletableFuture<List<Rental>>> futures = new ArrayList<>();
 
         // Go through each scraper
-        for (Scrapable scraper : scrapers) {
+        for (Scraper scraper : scrapers) {
             CompletableFuture<List<Rental>> future = getRentalsAsync(scraper);
             futures.add(future);
         }

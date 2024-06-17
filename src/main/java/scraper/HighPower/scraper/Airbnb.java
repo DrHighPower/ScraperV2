@@ -62,26 +62,17 @@ import static java.time.temporal.ChronoUnit.DAYS;
  * </pre>
  * </p>
  *
- * @see Scrapable
+ * @see Scraper
  * @see ApplicationSession
  * @see CalculationUtils
  */
-public class Airbnb implements Scrapable {
+public class Airbnb extends Scraper {
     private static final String URL = "https://www.airbnb.pt";
-    private static final int WAIT_TIME = ApplicationSession.getWait();
-
-    private static final double LATITUDE = ApplicationSession.getLatitude();
-    private static final double LONGITUDE = ApplicationSession.getLongitude();
-    private static final double MAX_DISTANCE = ApplicationSession.getMaximumDistance();
     private final String tripLength = "one_week";
     private final String pickerType;
     private final List<Integer> amenities = new ArrayList<>();
-    private final String country = ApplicationSession.getCountry();
-    private final int maxPeople = ApplicationSession.getPeopleQuantity();
-    private final int maxPrice = ApplicationSession.getMaximumPrice();
     private final List<String> flexibleTripDates = new ArrayList<>();
     private final int nightQuantity;
-    private String searchQuery;
     private LocalDate[] tripDates;
 
 
