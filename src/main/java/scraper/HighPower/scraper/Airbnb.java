@@ -149,10 +149,10 @@ public class Airbnb extends Scraper {
         StringBuilder builder = new StringBuilder(URL);
         builder.append("/s/homes?tab_id=home_tab")
                 .append("&flexible_trip_lengths%5B%5D=").append(tripLength)
-                .append("&query=").append(country)
+                .append("&query=").append(COUNTRY)
                 .append("&date_picker_type=").append(pickerType)
-                .append("&adults=").append(maxPeople)
-                .append("&price_max=").append((maxPrice * maxPeople) / nightQuantity); // Max price per night
+                .append("&adults=").append(MAX_PEOPLE)
+                .append("&price_max=").append((MAX_PRICE * MAX_PEOPLE) / nightQuantity); // Max price per night
 
         // Check the type of search
         if (pickerType.matches("flexible_dates")) {

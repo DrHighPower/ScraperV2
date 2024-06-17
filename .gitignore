@@ -155,5 +155,8 @@ buildNumber.properties
 
 # End of https://www.toptal.com/developers/gitignore/api/maven,intellij+all,visualstudiocode,java
 
+# Output directory
+**/resources/output/
+
 # Configuration file
 **/resources/config.properties

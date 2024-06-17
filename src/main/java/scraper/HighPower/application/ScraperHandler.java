@@ -8,6 +8,8 @@ import scraper.HighPower.scraper.Airbnb;
 import scraper.HighPower.scraper.MediaFerias;
 import scraper.HighPower.scraper.Scraper;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -50,7 +52,7 @@ public class ScraperHandler {
             options.addArguments("--headless");
 
             // Initiate the driver
-            WebDriver driver = new ChromeDriver();
+            WebDriver driver = new ChromeDriver(options);
 
             // Perform the scraping task
             List<Rental> rentals = scraper.scrape(driver);
@@ -95,8 +97,8 @@ public class ScraperHandler {
             // Get the combined results
             List<Rental> allRentals = combinedFuture.get();
 
-            //ToDo: Change to output into an Excel file
-            allRentals.forEach(System.out::println);
+            // Export the rentals to an Excel file
+            ExcelHandler.createSheet(allRentals, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm")));
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }

@@ -121,8 +121,8 @@ public class MediaFerias extends Scraper {
      */
     private void createURL() {
         // Creates the URL for the search
-        String builder = URL + "/aluguer-ferias-" + country.toLowerCase() +
-                "/" + peopleQuantityToLetter(maxPeople) +
+        String builder = URL + "/aluguer-ferias-" + COUNTRY.toLowerCase() +
+                "/" + peopleQuantityToLetter(MAX_PEOPLE) +
                 "00" + locationCodeToString(countryCode) +
                 pool + "00/" +
                 "?date1=" + tripDates[0] +
@@ -251,7 +251,7 @@ public class MediaFerias extends Scraper {
 
             // Skips the out of budget rentals
             double rentalTotalPrice = Double.parseDouble(value);
-            if (rentalTotalPrice > maxPrice * maxPeople) continue;
+            if (rentalTotalPrice > MAX_PRICE * MAX_PEOPLE) continue;
 
             // Get the rental's URL
             String rentalUrl = rental.select("div.bloc__header__text > a").attr("href");

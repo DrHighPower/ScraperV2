@@ -22,28 +22,44 @@ import java.util.List;
  * @see Rental
  */
 public abstract class Scraper {
-    /** The wait time for loading pages, in seconds. */
+    /**
+     * The wait time for loading pages, in seconds.
+     */
     protected static final int WAIT_TIME = ApplicationSession.getWait();
 
-    /** The latitude coordinate for filtering rental locations. */
+    /**
+     * The latitude coordinate for filtering rental locations.
+     */
     protected static final double LATITUDE = ApplicationSession.getLatitude();
 
-    /** The longitude coordinate for filtering rental locations. */
+    /**
+     * The longitude coordinate for filtering rental locations.
+     */
     protected static final double LONGITUDE = ApplicationSession.getLongitude();
 
-    /** The maximum distance from the specified coordinates for rental locations. */
+    /**
+     * The maximum distance from the specified coordinates for rental locations.
+     */
     protected static final double MAX_DISTANCE = ApplicationSession.getMaximumDistance();
 
-    /** The country where the search is to be conducted. */
-    protected final String country = ApplicationSession.getCountry();
+    /**
+     * The country where the search is to be conducted.
+     */
+    protected static final String COUNTRY = ApplicationSession.getCountry();
 
-    /** The maximum number of people for the rental. */
-    protected final int maxPeople = ApplicationSession.getPeopleQuantity();
+    /**
+     * The maximum number of people for the rental.
+     */
+    protected static final int MAX_PEOPLE = ApplicationSession.getPeopleQuantity();
 
-    /** The maximum price per night for the rental. */
-    protected final int maxPrice = ApplicationSession.getMaximumPrice();
+    /**
+     * The maximum price per night for the rental.
+     */
+    protected static final int MAX_PRICE = ApplicationSession.getMaximumPrice();
 
-    /** The search query URL. */
+    /**
+     * The search query URL.
+     */
     protected String searchQuery;
 
     /**
