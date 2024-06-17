@@ -11,6 +11,7 @@ import scraper.HighPower.scraper.Scraper;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -95,7 +96,8 @@ public class ScraperHandler {
 
         try {
             // Get the combined results
-            List<Rental> allRentals = combinedFuture.get();
+            List<Rental> allRentals = new ArrayList<>(combinedFuture.get());
+            Collections.sort(allRentals); // Sort the rentals by their total price
 
             // Export the rentals to an Excel file
             ExcelHandler.createSheet(allRentals, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm")));

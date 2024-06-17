@@ -6,7 +6,7 @@ import java.util.Objects;
  * The Rental class represents a rental property with details such as name, URL, distance from a point,
  * price per night, and total price.
  */
-public class Rental {
+public class Rental implements Comparable<Rental>{
     private final String name;
     private final String url;
     private final double distance; // In km
@@ -127,5 +127,19 @@ public class Rental {
     @Override
     public int hashCode() {
         return Objects.hash(name, distance);
+    }
+
+    /**
+     * Compares this Rental object with the specified Rental object based on
+     * their total prices.
+     *
+     * @param rental The rental to be compared.
+     * @return A negative integer, zero, or a positive integer as this rental's total price
+     *         is less than, equal to, or greater than the specified rental's total price.
+     * @throws NullPointerException If the specified rental is null.
+     */
+    @Override
+    public int compareTo(Rental rental) {
+        return Double.compare(this.totalPrice, rental.totalPrice);
     }
 }
