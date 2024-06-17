@@ -225,15 +225,37 @@ public class MediaFerias implements Scrapable {
             // The selectors to get the max price
             String[] selectors = {
                     "span.bloc__ribbon--info--darken > span ~ span:not(.text--sm)",
-                    "span.bloc__ribbon--third",
-                    "span.bloc__ribbon--info--darken"
+                    "span.bloc__ribbon--info--darken",
             };
 
             // Get the max price
             String value = "";
             for (String selector : selectors) {
-                value = rental.select(selector).text().replaceAll("[^\\d]", "");
-                if (!value.isEmpty()) break;
+                value = rental.select(selector).text();
+
+                // Go to the next iteration if nothing was found
+                if (value.isEmpty()) continue;
+
+                // Get only the numbers
+                value = value.replaceAll("[^\\d]", "");
+
+                // Check what selector was used
+                if (selector.equals(selectors[0])) {
+                    // Check if the value is by night
+                    String nightlyCheck = rental.select("span.bloc__ribbon--info--darken > span ~ span:contains(/noite)").text();
+                    if (!nightlyCheck.isEmpty()) {
+                        double newValue = Double.parseDouble(value);
+                        value = String.valueOf(newValue * nightQuantity);
+                    }
+                }
+
+                break;
+            }
+
+            // Stop the search if a non-valid value is found
+            if (value.isEmpty()) {
+                rentals.add(null);
+                break;
             }
 
             // Skips the out of budget rentals
@@ -291,6 +313,12 @@ public class MediaFerias implements Scrapable {
 
             // Adds the new rentals
             rentals.addAll(getRentals(searchDoc, driver));
+
+            // Check if the search has stopped because of non-valid values
+            if (rentals.contains(null)) {
+                rentals.remove(null); // Remove the null from the hash map
+                break;
+            }
 
             // Prepare next page
             pageNumber++;
