@@ -7,6 +7,7 @@ import org.jsoup.select.Elements;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WindowType;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import scraper.HighPower.application.ApplicationSession;
@@ -150,11 +151,13 @@ public final class MediaFerias extends Scraper {
      * @param url    The URL of the rental page.
      * @param driver The WebDriver instance to use.
      * @return The distance from the specified location.
+     * @throws RuntimeException If it wasn't possible to get the page.
      */
     private double getDistance(String url, WebDriver driver) {
 
-        // Get the web page
-        driver.get(url);
+        // Open the corresponding tab
+        Object[] windowHandles = driver.getWindowHandles().toArray();
+        driver.switchTo().window((String) windowHandles[1]);
 
         // Load the page
         try {
@@ -168,6 +171,9 @@ public final class MediaFerias extends Scraper {
         // Get the element with the coordinates
         Document rentalDoc = Jsoup.parse(driver.getPageSource());
         Elements jsScript = rentalDoc.select("div[id='googlemap'] > script");
+
+        // Close the tab
+        driver.close();
 
         // Stores the latitude and longitude of the rental
         double latitude = 0;
@@ -197,6 +203,78 @@ public final class MediaFerias extends Scraper {
     }
 
     /**
+     * Retrieves the rental price from the rental card element.
+     *
+     * @param rentalCard The rental card element.
+     * @return The rental price.
+     */
+    private double getPrice(Element rentalCard) {
+        // The selectors to get the max price
+        String[] selectors = {
+                "span.bloc__ribbon--info--darken > span ~ span:not(.text--sm)",
+                "span.bloc__ribbon--info--darken",
+        };
+
+        // Iterate over selectors to find the max price
+        String value = null;
+        for (String selector : selectors) {
+            value = rentalCard.select(selector).text();
+
+            // Continue to the next selector if no value is found
+            if (value.isEmpty()) continue;
+
+            // Extract only the numbers from the value
+            value = value.replaceAll("[^\\d]", "");
+
+            // Check what selector was used
+            if (selector.equals(selectors[0])) {
+                // Check if the value is by night
+                String nightlyCheck = rentalCard.select("span.bloc__ribbon--info--darken > span ~ span:contains(/noite)").text();
+                if (!nightlyCheck.isEmpty()) {
+                    double newValue = Double.parseDouble(value);
+                    value = String.valueOf(newValue * nightQuantity);
+                }
+            }
+
+            break;
+        }
+
+        if (value.isEmpty()) return 0;
+        else return Double.parseDouble(value);
+    }
+
+    /**
+     * Opens rental pages in new tabs.
+     *
+     * @param searchDoc The search result document.
+     * @param driver    The WebDriver instance to use.
+     */
+    private void openRentals(Document searchDoc, WebDriver driver) {
+        // Gets all the rental cards
+        Elements searchedRentals = searchDoc.select("div.property-bloc-autour");
+
+        // Go through all the cards containing the rentals
+        for (Element rental : searchedRentals) {
+
+            // Get the total price
+            double rentalTotalPrice = getPrice(rental);
+
+            // Stop the loop when non-valid rentals are reached
+            if (rentalTotalPrice == 0) break;
+
+            // Skips the out of budget rentals
+            if (rentalTotalPrice > MAX_PRICE * MAX_PEOPLE) continue;
+
+            // Get the rental's URL
+            String rentalUrl = rental.select("div.bloc__header__text > a").attr("href");
+
+            // Open a new tab for the rental
+            driver.switchTo().newWindow(WindowType.TAB);
+            driver.get(rentalUrl);
+        }
+    }
+
+    /**
      * Extracts the rentals from the document.
      *
      * @param searchDoc The document to search within.
@@ -220,38 +298,16 @@ public final class MediaFerias extends Scraper {
                     "span.bloc__ribbon--info--darken",
             };
 
-            // Get the max price
-            String value = "";
-            for (String selector : selectors) {
-                value = rental.select(selector).text();
-
-                // Go to the next iteration if nothing was found
-                if (value.isEmpty()) continue;
-
-                // Get only the numbers
-                value = value.replaceAll("[^\\d]", "");
-
-                // Check what selector was used
-                if (selector.equals(selectors[0])) {
-                    // Check if the value is by night
-                    String nightlyCheck = rental.select("span.bloc__ribbon--info--darken > span ~ span:contains(/noite)").text();
-                    if (!nightlyCheck.isEmpty()) {
-                        double newValue = Double.parseDouble(value);
-                        value = String.valueOf(newValue * nightQuantity);
-                    }
-                }
-
-                break;
-            }
+            // Get the total price
+            double rentalTotalPrice = getPrice(rental);
 
             // Stop the search if a non-valid value is found
-            if (value.isEmpty()) {
+            if (rentalTotalPrice == 0) {
                 rentals.add(null);
                 break;
             }
 
             // Skips the out of budget rentals
-            double rentalTotalPrice = Double.parseDouble(value);
             if (rentalTotalPrice > MAX_PRICE * MAX_PEOPLE) continue;
 
             // Get the rental's URL
@@ -303,8 +359,15 @@ public final class MediaFerias extends Scraper {
             // Stores the page info
             Document searchDoc = Jsoup.parse(driver.getPageSource());
 
+            // Open all tabs for the rentals
+            openRentals(searchDoc, driver);
+
             // Adds the new rentals
             rentals.addAll(getRentals(searchDoc, driver));
+
+            // Go back to the search page
+            Object[] windowHandles = driver.getWindowHandles().toArray();
+            driver.switchTo().window((String) windowHandles[0]);
 
             // Check if the search has stopped because of non-valid values
             if (rentals.contains(null)) {

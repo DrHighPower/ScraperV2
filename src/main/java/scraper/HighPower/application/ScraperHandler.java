@@ -1,5 +1,6 @@
 package scraper.HighPower.application;
 
+import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -59,6 +60,8 @@ public class ScraperHandler {
             // Add settings to the driver
             ChromeOptions options = new ChromeOptions();
             options.setCapability("goog:loggingPrefs", preferences);
+            options.addArguments("--headless");
+            options.setPageLoadStrategy(PageLoadStrategy.EAGER);
 
             // Initiate the driver
             WebDriver driver = new ChromeDriver(options);
