@@ -62,12 +62,15 @@ import static java.time.temporal.ChronoUnit.DAYS;
  * </pre>
  * </p>
  *
+ * <p>Note: This class is final and cannot be subclassed.</p>
+ *
  * @see Scraper
+ * @see Rental
  * @see ApplicationSession
  * @see CalculationUtils
  */
-public class Airbnb extends Scraper {
-    private static final String URL = "https://www.airbnb.pt";
+public final class Airbnb extends Scraper {
+    private static final String URL = "https://www.airbnb.pt"; // TODO: Update so it can be any country
     private final String tripLength = "one_week";
     private final String pickerType;
     private final List<Integer> amenities = new ArrayList<>();
@@ -77,7 +80,7 @@ public class Airbnb extends Scraper {
 
 
     /**
-     * Constructs an Airbnb object, initializing the search parameters from the ApplicationSession.
+     * Constructs an Airbnb object, initializing the search parameters from the {@link ApplicationSession}.
      */
     public Airbnb() {
 
@@ -235,7 +238,7 @@ public class Airbnb extends Scraper {
      * Extracts the rentals from the document.
      *
      * @param searchDoc The document to search within.
-     * @return A set of Rental objects extracted from the document.
+     * @return A set of {@link Rental} objects extracted from the document.
      */
     private HashSet<Rental> getRentals(Document searchDoc) {
 
@@ -277,7 +280,7 @@ public class Airbnb extends Scraper {
      * Scrapes rental properties from Airbnb using the provided WebDriver.
      *
      * @param driver The WebDriver to use for scraping.
-     * @return A list of Rental objects representing the scraped rental properties.
+     * @return A list of {@link Rental} objects representing the scraped rental properties.
      * @throws IllegalArgumentException If the provided driver is null.
      */
     @Override

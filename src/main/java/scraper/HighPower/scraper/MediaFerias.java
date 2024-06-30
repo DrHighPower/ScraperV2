@@ -46,18 +46,19 @@ import static java.time.temporal.ChronoUnit.DAYS;
  * </p>
  *
  * @see Scraper
+ * @see Rental
  * @see ApplicationSession
  * @see CalculationUtils
  */
-public class MediaFerias extends Scraper {
+public final class MediaFerias extends Scraper {
     private static final String URL = "https://www.mediaferias.com";
-    private final int countryCode = ApplicationSession.getCountryCode();
+    private final int countryCode = ApplicationSession.getMediaFeriasCountryCode();
     private final int nightQuantity;
     private final int pool;
-    private LocalDate[] tripDates;
+    private final LocalDate[] tripDates;
 
     /**
-     * Constructs a MediaFerias object, initializing the search parameters from the ApplicationSession.
+     * Constructs a MediaFerias object, initializing the search parameters from the {@link ApplicationSession}.
      */
     public MediaFerias() {
 
@@ -200,7 +201,7 @@ public class MediaFerias extends Scraper {
      *
      * @param searchDoc The document to search within.
      * @param driver    The WebDriver instance to use.
-     * @return A set of Rental objects extracted from the document.
+     * @return A set of {@link Rental} objects extracted from the document.
      */
     private HashSet<Rental> getRentals(Document searchDoc, WebDriver driver) {
 
@@ -275,7 +276,7 @@ public class MediaFerias extends Scraper {
      * Scrapes the rental information from MediaFerias website.
      *
      * @param driver The WebDriver instance to use.
-     * @return A list of Rental objects representing the scraped rentals.
+     * @return A list of {@link Rental} objects representing the scraped rentals.
      */
     @Override
     public List<Rental> scrape(WebDriver driver) {

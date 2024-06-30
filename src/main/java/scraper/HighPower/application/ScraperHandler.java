@@ -3,10 +3,13 @@ package scraper.HighPower.application;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.logging.LoggingPreferences;
 import scraper.HighPower.domain.Rental;
 import scraper.HighPower.scraper.Airbnb;
 import scraper.HighPower.scraper.MediaFerias;
 import scraper.HighPower.scraper.Scraper;
+import scraper.HighPower.scraper.Vrbo;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 
 /**
  * The ScraperHandler class manages asynchronous scraping tasks for multiple Scraper objects.
@@ -48,9 +52,13 @@ public class ScraperHandler {
      */
     private static CompletableFuture<List<Rental>> getRentalsAsync(Scraper scraper) {
         return CompletableFuture.supplyAsync(() -> {
+            // Add logging to the driver
+            LoggingPreferences preferences = new LoggingPreferences();
+            preferences.enable(LogType.PERFORMANCE, Level.ALL);
+
             // Add settings to the driver
             ChromeOptions options = new ChromeOptions();
-            options.addArguments("--headless");
+            options.setCapability("goog:loggingPrefs", preferences);
 
             // Initiate the driver
             WebDriver driver = new ChromeDriver(options);
@@ -72,7 +80,7 @@ public class ScraperHandler {
     public static void run() {
 
         // The list of scrapers. ToDo: Add a way to select which scrappers to use in the config file
-        List<Scraper> scrapers = new ArrayList<>(List.of(new Airbnb(), new MediaFerias()));
+        List<Scraper> scrapers = new ArrayList<>(List.of(new Airbnb(), new MediaFerias(), new Vrbo()));
 
         // Create a list of CompletableFuture for each scraper
         List<CompletableFuture<List<Rental>>> futures = new ArrayList<>();
