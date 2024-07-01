@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -109,13 +110,8 @@ public final class MediaFerias extends Scraper {
      * @return The string representation of the location code.
      */
     private String locationCodeToString(int locationCode) {
-        if (locationCode >= 0 && locationCode <= 9) {
-            return "0" + locationCode;
-        } else if (locationCode >= 10) {
-            return String.valueOf(locationCode);
-        }
-
-        return "00";
+        if (locationCode < 0) return "00";
+        return locationCode <= 9 ? "0" + locationCode : String.valueOf(locationCode);
     }
 
     /**
@@ -123,14 +119,12 @@ public final class MediaFerias extends Scraper {
      */
     private void createURL() {
         // Creates the URL for the search
-        String builder = URL + "/aluguer-ferias-" + COUNTRY.toLowerCase() +
+        searchQuery = URL + "/aluguer-ferias-" + COUNTRY.toLowerCase() +
                 "/" + peopleQuantityToLetter(MAX_PEOPLE) +
                 "00" + locationCodeToString(countryCode) +
                 pool + "00/" +
                 "?date1=" + tripDates[0] +
                 "&date2=" + tripDates[1];
-
-        searchQuery = builder;
     }
 
     /**
@@ -141,7 +135,6 @@ public final class MediaFerias extends Scraper {
      */
     private String getPage(int page) {
         if (searchQuery == null) createURL();
-
         return searchQuery + "&cur_page=" + page;
     }
 
@@ -175,31 +168,23 @@ public final class MediaFerias extends Scraper {
         // Close the tab
         driver.close();
 
-        // Stores the latitude and longitude of the rental
-        double latitude = 0;
-        double longitude = 0;
-
+        // Go through the JavaScript
         for (Element script : jsScript) {
-
             // Regex matchers to get the coordinates
             Matcher latMatch = Pattern.compile("annonce_lat = +[-]?[\\d]+[.][\\d]*").matcher(script.data());
             Matcher lngMatch = Pattern.compile("annonce_lng = +[-]?[\\d]+[.][\\d]*").matcher(script.data());
 
             if (latMatch.find() && lngMatch.find()) {
-                String latStr = latMatch.group(0).replaceAll("[^-\\d.]", "");
-                String lngStr = lngMatch.group(0).replaceAll("[^-\\d.]", "");
-
                 // Get the latitude and longitude
-                latitude = Double.parseDouble(latStr);
-                longitude = Double.parseDouble(lngStr);
+                double latitude = Double.parseDouble(latMatch.group().replaceAll("[^-\\d.]", ""));
+                double longitude = Double.parseDouble(lngMatch.group().replaceAll("[^-\\d.]", ""));
 
-                break; // End loop
+                // Return the distance
+                return CalculationUtils.haversine(LATITUDE, LONGITUDE, latitude, longitude);
             }
         }
 
-        // Calculate the distance
-        if (latitude == 0 && longitude == 0) return 0;
-        else return CalculationUtils.haversine(LATITUDE, LONGITUDE, latitude, longitude);
+        return 0;
     }
 
     /**
@@ -216,9 +201,8 @@ public final class MediaFerias extends Scraper {
         };
 
         // Iterate over selectors to find the max price
-        String value = null;
         for (String selector : selectors) {
-            value = rentalCard.select(selector).text();
+            String value = rentalCard.select(selector).text();
 
             // Continue to the next selector if no value is found
             if (value.isEmpty()) continue;
@@ -231,16 +215,25 @@ public final class MediaFerias extends Scraper {
                 // Check if the value is by night
                 String nightlyCheck = rentalCard.select("span.bloc__ribbon--info--darken > span ~ span:contains(/noite)").text();
                 if (!nightlyCheck.isEmpty()) {
-                    double newValue = Double.parseDouble(value);
-                    value = String.valueOf(newValue * nightQuantity);
+                    try {
+                        double newValue = Double.parseDouble(value);
+                        value = String.valueOf(newValue * nightQuantity);
+                    } catch (NumberFormatException e) {
+                        System.err.println("Failed to parse nightly price: " + value);
+                        return 0;
+                    }
                 }
             }
 
-            break;
+            try {
+                return Double.parseDouble(value);
+            } catch (NumberFormatException e) {
+                System.err.println("Failed to parse price: " + value);
+                return 0;
+            }
         }
 
-        if (value.isEmpty()) return 0;
-        else return Double.parseDouble(value);
+        return 0;
     }
 
     /**
@@ -255,7 +248,6 @@ public final class MediaFerias extends Scraper {
 
         // Go through all the cards containing the rentals
         for (Element rental : searchedRentals) {
-
             // Get the total price
             double rentalTotalPrice = getPrice(rental);
 
@@ -269,8 +261,7 @@ public final class MediaFerias extends Scraper {
             String rentalUrl = rental.select("div.bloc__header__text > a").attr("href");
 
             // Open a new tab for the rental
-            driver.switchTo().newWindow(WindowType.TAB);
-            driver.get(rentalUrl);
+            driver.switchTo().newWindow(WindowType.TAB).get(rentalUrl);
         }
     }
 
@@ -281,23 +272,16 @@ public final class MediaFerias extends Scraper {
      * @param driver    The WebDriver instance to use.
      * @return A set of {@link Rental} objects extracted from the document.
      */
-    private HashSet<Rental> getRentals(Document searchDoc, WebDriver driver) {
+    private Set<Rental> getRentals(Document searchDoc, WebDriver driver) {
 
         // Gets all the rental cards
         Elements searchedRentals = searchDoc.select("div.property-bloc-autour");
 
         // Stores the valid rentals
-        HashSet<Rental> rentals = new HashSet<>();
+        Set<Rental> rentals = new HashSet<>();
 
         // Go through all the cards containing the rentals
         for (Element rental : searchedRentals) {
-
-            // The selectors to get the max price
-            String[] selectors = {
-                    "span.bloc__ribbon--info--darken > span ~ span:not(.text--sm)",
-                    "span.bloc__ribbon--info--darken",
-            };
-
             // Get the total price
             double rentalTotalPrice = getPrice(rental);
 
@@ -366,8 +350,7 @@ public final class MediaFerias extends Scraper {
             rentals.addAll(getRentals(searchDoc, driver));
 
             // Go back to the search page
-            Object[] windowHandles = driver.getWindowHandles().toArray();
-            driver.switchTo().window((String) windowHandles[0]);
+            driver.switchTo().window(driver.getWindowHandles().toArray(new String[0])[0]);
 
             // Check if the search has stopped because of non-valid values
             if (rentals.contains(null)) {

@@ -222,6 +222,7 @@ public final class Vrbo extends Scraper {
             preferences.enable(LogType.PERFORMANCE, Level.ALL);
             ChromeOptions option = new ChromeOptions();
             option.setCapability("goog:loggingPrefs", preferences);
+            option.addArguments("--headless");
 
             // Make a new instance of the driver
             driver = new ChromeDriver(option);
