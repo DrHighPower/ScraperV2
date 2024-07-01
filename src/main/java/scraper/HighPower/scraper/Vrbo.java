@@ -60,7 +60,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
 public final class Vrbo extends Scraper {
     private static final String URL = "https://www.vrbo.com";
     private static final int ATTEMPTS = 5;
-    private final int countryCode = ApplicationSession.getVrboCountryCode();
+    private final int countryCode = ApplicationSession.getVrboCountryCode(COUNTRY);
     private final String tripLength = "1_WEEK";
     private final List<String> amenities = new ArrayList<>();
     private final List<String> flexibleTripDates = new ArrayList<>();

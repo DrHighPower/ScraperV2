@@ -120,7 +120,7 @@ public final class Airbnb extends Scraper {
      */
     private static double[] getPillPosition(Document searchDoc, String rentalName) {
         // Select the element by the text
-        Elements elements = searchDoc.select("div[style~=touch-action: pan-x pan-y]:has(span:containsOwn(" + rentalName + "))");
+        Elements elements = searchDoc.select("div[style~=touch-action: pan-x pan-y]:has(span:containsOwn(" + rentalName.replaceAll("'", "\\\\'") + "))");
 
         // Store the position
         double leftValue = 0;
@@ -152,7 +152,7 @@ public final class Airbnb extends Scraper {
         StringBuilder builder = new StringBuilder(URL);
         builder.append("/s/homes?tab_id=home_tab")
                 .append("&flexible_trip_lengths%5B%5D=").append(tripLength)
-                .append("&query=").append(COUNTRY)
+                .append("&query=").append(COUNTRY.replaceAll(" ", "%20"))
                 .append("&date_picker_type=").append(pickerType)
                 .append("&adults=").append(MAX_PEOPLE)
                 .append("&price_max=").append((MAX_PRICE * MAX_PEOPLE) / nightQuantity); // Max price per night

@@ -1,5 +1,6 @@
 package scraper.HighPower.application;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,12 +14,11 @@ import java.util.Properties;
  * from a properties file. These settings include coordinates, distance, price, quantity, dates, and amenities.
  */
 public class ApplicationSession {
-    private static final String CONFIGURATION_FILENAME = "src/main/resources/config.properties";
+    private static final String CONFIGURATION_FILENAME = "src" + File.separator + "main" + File.separator + "resources" + File.separator + "config.properties";
+    private static final String COUNTRY_CONFIGURATION_FILENAME = "src" + File.separator + "main" + File.separator + "resources" + File.separator + "country.properties";
     private static final String LATITUDE_COORDINATES = "Coordinates.Latitude";
     private static final String LONGITUDE_COORDINATES = "Coordinates.Longitude";
-    private static final String COUNTRY = "Coordinates.Country";
     private static final String MEDIA_FERIAS_COUNTRY_CODE = "Coordinates.Country.MediaFerias";
-    private static final String VRBO_COUNTRY_CODE = "Coordinates.Country.Vrbo";
     private static final String MAXIMUM_DISTANCE = "Maximum.Distance";
     private static final String MAXIMUM_PRICE = "Maximum.Price";
     private static final String PEOPLE_QUANTITY = "Quantity.People";
@@ -34,12 +34,12 @@ public class ApplicationSession {
      *
      * @return The properties loaded from the configuration file.
      */
-    private static Properties getProperties() {
+    private static Properties getProperties(String filePath) {
         Properties props = new Properties();
 
         // Read configured values
         try {
-            InputStream in = new FileInputStream(CONFIGURATION_FILENAME);
+            InputStream in = new FileInputStream(filePath);
             props.load(in);
             in.close();
         } catch (IOException ex) {
@@ -124,7 +124,7 @@ public class ApplicationSession {
      * @return The latitude.
      */
     public static double getLatitude() {
-        String strLatitude = getProperties().getProperty(LATITUDE_COORDINATES);
+        String strLatitude = getProperties(CONFIGURATION_FILENAME).getProperty(LATITUDE_COORDINATES);
         return getDoubleFromString(strLatitude, "The latitude");
     }
 
@@ -134,17 +134,8 @@ public class ApplicationSession {
      * @return The longitude.
      */
     public static double getLongitude() {
-        String strLongitude = getProperties().getProperty(LONGITUDE_COORDINATES);
+        String strLongitude = getProperties(CONFIGURATION_FILENAME).getProperty(LONGITUDE_COORDINATES);
         return getDoubleFromString(strLongitude, "The longitude");
-    }
-
-    /**
-     * Gets the country from the configuration file.
-     *
-     * @return The country.
-     */
-    public static String getCountry() {
-        return getProperties().getProperty(COUNTRY);
     }
 
     /**
@@ -153,7 +144,7 @@ public class ApplicationSession {
      * @return The country code.
      */
     public static int getMediaFeriasCountryCode() {
-        String strCode = getProperties().getProperty(MEDIA_FERIAS_COUNTRY_CODE);
+        String strCode = getProperties(CONFIGURATION_FILENAME).getProperty(MEDIA_FERIAS_COUNTRY_CODE);
         return getIntegerFromString(strCode, "The Media Ferias country code");
     }
 
@@ -162,8 +153,8 @@ public class ApplicationSession {
      *
      * @return The country code.
      */
-    public static int getVrboCountryCode() {
-        String strCode = getProperties().getProperty(VRBO_COUNTRY_CODE);
+    public static int getVrboCountryCode(String country) {
+        String strCode = getProperties(COUNTRY_CONFIGURATION_FILENAME).getProperty(country);
         return getIntegerFromString(strCode, "The Vrbo country code");
     }
 
@@ -173,7 +164,7 @@ public class ApplicationSession {
      * @return The maximum distance.
      */
     public static double getMaximumDistance() {
-        String strDistance = getProperties().getProperty(MAXIMUM_DISTANCE);
+        String strDistance = getProperties(CONFIGURATION_FILENAME).getProperty(MAXIMUM_DISTANCE);
         return getDoubleFromString(strDistance, "The maximum distance");
     }
 
@@ -183,7 +174,7 @@ public class ApplicationSession {
      * @return The maximum price.
      */
     public static int getMaximumPrice() {
-        String strPrice = getProperties().getProperty(MAXIMUM_PRICE);
+        String strPrice = getProperties(CONFIGURATION_FILENAME).getProperty(MAXIMUM_PRICE);
         return getIntegerFromString(strPrice, "The maximum price");
     }
 
@@ -193,7 +184,7 @@ public class ApplicationSession {
      * @return The people quantity.
      */
     public static int getPeopleQuantity() {
-        String strPeople = getProperties().getProperty(PEOPLE_QUANTITY);
+        String strPeople = getProperties(CONFIGURATION_FILENAME).getProperty(PEOPLE_QUANTITY);
         return getIntegerFromString(strPeople, "The people quantity");
     }
 
@@ -203,7 +194,7 @@ public class ApplicationSession {
      * @return The night quantity.
      */
     public static int getNightQuantity() {
-        String strNight = getProperties().getProperty(NIGHT_QUANTITY);
+        String strNight = getProperties(CONFIGURATION_FILENAME).getProperty(NIGHT_QUANTITY);
         return getIntegerFromString(strNight, "The night quantity");
     }
 
@@ -213,7 +204,7 @@ public class ApplicationSession {
      * @return The start date.
      */
     public static LocalDate getStartDate() {
-        String strDate = getProperties().getProperty(START_DATE);
+        String strDate = getProperties(CONFIGURATION_FILENAME).getProperty(START_DATE);
         return getDateFromString(strDate, "The start date");
     }
 
@@ -223,7 +214,7 @@ public class ApplicationSession {
      * @return The end date.
      */
     public static LocalDate getEndDate() {
-        String strDate = getProperties().getProperty(END_DATE);
+        String strDate = getProperties(CONFIGURATION_FILENAME).getProperty(END_DATE);
         return getDateFromString(strDate, "The end date");
     }
 
@@ -233,7 +224,7 @@ public class ApplicationSession {
      * @return The date flexibility.
      */
     public static boolean getFlexibility() {
-        String strFlexible = getProperties().getProperty(FLEXIBLE_DATE);
+        String strFlexible = getProperties(CONFIGURATION_FILENAME).getProperty(FLEXIBLE_DATE);
         return getBoolFromString(strFlexible);
     }
 
@@ -243,7 +234,7 @@ public class ApplicationSession {
      * @return The pool availability.
      */
     public static boolean getPool() {
-        String strPool = getProperties().getProperty(AMENITIES_POOL);
+        String strPool = getProperties(CONFIGURATION_FILENAME).getProperty(AMENITIES_POOL);
         return getBoolFromString(strPool);
     }
 
@@ -253,7 +244,7 @@ public class ApplicationSession {
      * @return The wait time.
      */
     public static int getWait() {
-        String strWait = getProperties().getProperty(PAGE_WAIT);
+        String strWait = getProperties(CONFIGURATION_FILENAME).getProperty(PAGE_WAIT);
         return getIntegerFromString(strWait, "The wait time");
     }
 }

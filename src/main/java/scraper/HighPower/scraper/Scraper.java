@@ -1,5 +1,6 @@
 package scraper.HighPower.scraper;
 
+import io.github.coordinates2country.Coordinates2Country;
 import org.openqa.selenium.WebDriver;
 import scraper.HighPower.application.ApplicationSession;
 import scraper.HighPower.domain.Rental;
@@ -45,7 +46,7 @@ public abstract class Scraper {
     /**
      * The country where the search is to be conducted.
      */
-    protected static final String COUNTRY = ApplicationSession.getCountry();
+    protected static final String COUNTRY = Coordinates2Country.country(LATITUDE, LONGITUDE);
 
     /**
      * The maximum number of people for the rental.

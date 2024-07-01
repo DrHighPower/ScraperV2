@@ -20,6 +20,7 @@
         <slf4j.version>2.0.13</slf4j.version>
         <jsoup.version>1.17.2</jsoup.version>
         <json.version>20240303</json.version>
+        <coordinates2country.version>1.6</coordinates2country.version>
     </properties>
 
     <dependencies>
@@ -67,6 +68,13 @@
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>${json.version}</version>
+        </dependency>
+
+        <!-- Used for getting the country from the given coordinates -->
+        <dependency>
+            <groupId>io.github.coordinates2country</groupId>
+            <artifactId>coordinates2country</artifactId>
+            <version>${coordinates2country.version}</version>
         </dependency>
 
     </dependencies>

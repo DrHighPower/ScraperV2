@@ -320,7 +320,7 @@ public final class MediaFerias extends Scraper {
      */
     @Override
     public List<Rental> scrape(WebDriver driver) {
-        if (driver == null) throw new IllegalArgumentException("The driver can´t be null!");
+        if (driver == null) throw new IllegalArgumentException("The driver can't be null!");
 
         // Hash set of all the valid rentals
         HashSet<Rental> rentals = new HashSet<>();
