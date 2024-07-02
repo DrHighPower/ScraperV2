@@ -10,11 +10,11 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
-import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import scraper.HighPower.application.ApplicationSession;
 import scraper.HighPower.application.CalculationUtils;
+import scraper.HighPower.application.WebDriverConfig;
 import scraper.HighPower.domain.Rental;
 
 import java.time.Duration;
@@ -22,7 +22,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -217,15 +216,8 @@ public final class Vrbo extends Scraper {
             driver.manage().deleteAllCookies();
             driver.quit();
 
-            // Add the option to check the logs
-            LoggingPreferences preferences = new LoggingPreferences();
-            preferences.enable(LogType.PERFORMANCE, Level.ALL);
-            ChromeOptions option = new ChromeOptions();
-            option.setCapability("goog:loggingPrefs", preferences);
-            option.addArguments("--headless");
-
             // Make a new instance of the driver
-            driver = new ChromeDriver(option);
+            driver = new ChromeDriver((ChromeOptions) WebDriverConfig.getDriverOptions());
         }// TODO: Add other browsers
 
         return driver;

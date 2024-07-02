@@ -1,11 +1,8 @@
 package scraper.HighPower.application;
 
-import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.logging.LogType;
-import org.openqa.selenium.logging.LoggingPreferences;
 import scraper.HighPower.domain.Rental;
 import scraper.HighPower.scraper.Airbnb;
 import scraper.HighPower.scraper.MediaFerias;
@@ -19,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
 
 /**
  * The ScraperHandler class manages asynchronous scraping tasks for multiple Scraper objects.
@@ -53,18 +49,10 @@ public class ScraperHandler {
      */
     private static CompletableFuture<List<Rental>> getRentalsAsync(Scraper scraper) {
         return CompletableFuture.supplyAsync(() -> {
-            // Add logging to the driver
-            LoggingPreferences preferences = new LoggingPreferences();
-            preferences.enable(LogType.PERFORMANCE, Level.ALL);
-
-            // Add settings to the driver
-            ChromeOptions options = new ChromeOptions();
-            options.setCapability("goog:loggingPrefs", preferences);
-            options.addArguments("--headless");
-            options.setPageLoadStrategy(PageLoadStrategy.EAGER);
 
             // Initiate the driver
-            WebDriver driver = new ChromeDriver(options);
+            WebDriver driver = new ChromeDriver((ChromeOptions) WebDriverConfig.getDriverOptions());
+            // TODO: Add to check the browser used
 
             // Perform the scraping task
             List<Rental> rentals = scraper.scrape(driver);
