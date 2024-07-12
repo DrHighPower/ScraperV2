@@ -4,10 +4,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import scraper.HighPower.domain.Rental;
-import scraper.HighPower.scraper.Airbnb;
-import scraper.HighPower.scraper.MediaFerias;
-import scraper.HighPower.scraper.Scraper;
-import scraper.HighPower.scraper.Vrbo;
+import scraper.HighPower.scraper.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -71,7 +68,7 @@ public class ScraperHandler {
     public static void run() {
 
         // The list of scrapers. ToDo: Add a way to select which scrappers to use in the config file
-        List<Scraper> scrapers = new ArrayList<>(List.of(new Airbnb(), new MediaFerias(), new Vrbo()));
+        List<Scraper> scrapers = new ArrayList<>(List.of(new Airbnb(), new MediaFerias(), new Vrbo(), new Booking()));
 
         // Create a list of CompletableFuture for each scraper
         List<CompletableFuture<List<Rental>>> futures = new ArrayList<>();
