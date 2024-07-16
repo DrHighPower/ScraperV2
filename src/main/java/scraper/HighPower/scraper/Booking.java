@@ -285,16 +285,23 @@ public final class Booking extends Scraper {
             // Go to the end of the page
             ((JavascriptExecutor) driver).executeScript("window.scrollTo(0, document.body.scrollHeight)");
 
+            // Wait for javascript to load
             try {
-                // Check if button has been loaded
-                wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//button[@type='button'][span[contains(text(),'Load')]]")));
-            } catch (TimeoutException e) {
-                break; // Exit loop if the whole page has been loaded
+                Thread.sleep(Duration.ofSeconds(2));
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
 
-            // Load more content
-            WebElement loadContent = driver.findElement(By.xpath("//button[@type='button'][span[contains(text(),'Load')]]"));
-            loadContent.sendKeys(Keys.ENTER);
+            // Wait for javascript to end
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("div[data-testid='skeleton-loader']")));
+
+            try {
+                // Load more content
+                WebElement loadContent = driver.findElement(By.xpath("//button[@type='button'][span[contains(text(),'Load')]]"));
+                loadContent.sendKeys(Keys.ENTER);
+            }catch (NoSuchElementException e){
+                break; // Exit loop if the whole page has been loaded
+            }
         }
 
         // Stores the page info
