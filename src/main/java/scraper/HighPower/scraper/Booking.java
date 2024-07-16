@@ -135,9 +135,31 @@ public final class Booking extends Scraper {
      */
     private double getDistance(String url, WebDriver driver) {
 
+        // Get the pattern to mach
+        Pattern pattern = Pattern.compile("^[^?]*");
+
         // Open the corresponding tab
         Object[] windowHandles = driver.getWindowHandles().toArray();
-        driver.switchTo().window((String) windowHandles[1]);
+        for(int i = windowHandles.length - 1; i > 0; i--){
+            driver.switchTo().window((String) windowHandles[i]);
+            String currentUrl = driver.getCurrentUrl();
+
+            // Get the matching part of the URL
+            Matcher currentUrlMatcher = pattern.matcher(currentUrl);
+            String matchedCurrentUrl = currentUrl;
+            if (currentUrlMatcher.find()) {
+                matchedCurrentUrl = currentUrlMatcher.group(0);
+            }
+
+            Matcher urlMatcher = pattern.matcher(url);
+            String matchedUrl = url;
+            if (urlMatcher.find()) {
+                matchedUrl = urlMatcher.group(0);
+            }
+
+            // Check if the URL are equal
+            if (matchedUrl.equals(matchedCurrentUrl)) break;
+        }
 
         // Load the page
         try {
@@ -187,8 +209,8 @@ public final class Booking extends Scraper {
             // Get the rental URL to open the tab to
             String rentalUrl = rental.select("a[data-testid='title-link']").attr("href");
 
-            // Open a new tab for the rental
-            driver.switchTo().newWindow(WindowType.TAB).get(rentalUrl);
+            // Use JavaScript to open the new tab without waiting
+            ((JavascriptExecutor) driver).executeScript("window.open(arguments[0], '_blank');", rentalUrl);
         }
     }
 
@@ -225,7 +247,7 @@ public final class Booking extends Scraper {
 
                 // Get rental info
                 String totalPriceStr = rental.select("span[data-testid='price-and-discounted-price']").text().replaceAll("[^\\d]", "");
-                ;
+
                 double rentalTotalPrice = Double.parseDouble(totalPriceStr);
                 double rentalNightPrice = rentalTotalPrice / nightQuantity;
                 String rentalName = rental.select("div[data-testid='title']").text();
